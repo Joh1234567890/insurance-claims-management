@@ -1,0 +1,815 @@
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.App .container {
+  flex: 1;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.page-title {
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.section-title {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.gap-10 {
+  gap: 10px;
+}
+
+.gap-20 {
+  gap: 20px;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.hidden {
+  display: none;
+}
+
+.visible {
+  display: block;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-content h4 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.modal-content .form-group {
+  margin-bottom: 20px;
+}
+
+.modal-content .d-flex {
+  justify-content: flex-end;
+}
+
+/* Drag and Drop File Upload Styles */
+.drag-drop-zone {
+  position: relative;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 16px 20px;
+  text-align: center;
+  background-color: #f9fafb;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drag-drop-zone:hover {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+.drag-drop-zone.drag-over {
+  border-color: #3b82f6;
+  background-color: #dbeafe;
+  transform: scale(1.02);
+}
+
+.drag-drop-zone.has-file {
+  border-color: #10b981;
+  background-color: #ecfdf5;
+}
+
+.file-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.drag-drop-content {
+  pointer-events: none;
+}
+
+.drag-drop-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+  opacity: 0.6;
+}
+
+.drag-drop-text {
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.drag-drop-subtext {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.browse-link {
+  color: #3b82f6;
+  text-decoration: underline;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.browse-link:hover {
+  color: #2563eb;
+}
+
+.drag-drop-formats {
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.file-selected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px;
+  background-color: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 6px;
+  color: #0369a1;
+}
+
+.file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.file-size {
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 4px;
+}
+
+/* File Upload Section Styles */
+.file-upload-section {
+  margin-bottom: 24px;
+}
+
+.file-upload-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.file-upload-title {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.file-upload-description {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.file-upload-status {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.file-upload-status.success {
+  background-color: #ecfdf5;
+  color: #059669;
+}
+
+.file-upload-status.error {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+/* Small Drag and Drop Zone for File Replacement */
+.drag-drop-zone-small {
+  position: relative;
+  border: 2px dashed #d1d5db;
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+  background-color: #f9fafb;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.drag-drop-zone-small:hover {
+  border-color: #f59e0b;
+  background-color: #fffbeb;
+}
+
+.drag-drop-content-small {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.drag-drop-icon-small {
+  font-size: 16px;
+  opacity: 0.6;
+}
+
+.drag-drop-text-small {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.file-replace-section {
+  margin-top: 8px;
+}
+
+/* Notification Panel Styles - Minimalistic */
+.notifications-container {
+  position: relative;
+  display: inline-block;
+}
+
+.notification-bell {
+  position: relative;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-bell:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.notification-icon {
+  font-size: 18px;
+  color: #e5e7eb;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: #ef4444;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  border: 2px solid #1f2937;
+}
+
+.notification-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: -10px;
+  width: 380px;
+  max-height: 500px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.notification-panel::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 16px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid white;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f3f4f6;
+  background-color: #f9fafb;
+}
+
+.notification-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.notification-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  display: flex;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.notification-item:hover {
+  background-color: #f9fafb;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item.unread {
+  background-color: #eff6ff;
+  border-left: 3px solid #3b82f6;
+}
+
+.notification-icon-wrapper {
+  margin-right: 12px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.notification-type-icon {
+  font-size: 16px;
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-title {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.notification-message {
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.notification-time {
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+.notification-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 8px;
+}
+
+.notification-actions .btn {
+  padding: 4px 8px;
+  font-size: 11px;
+  border-radius: 4px;
+  font-weight: 500;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.notification-actions .btn-primary {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.notification-actions .btn-primary:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.notification-actions .btn-secondary {
+  background-color: #6b7280;
+  color: white;
+  border-color: #6b7280;
+}
+
+.notification-actions .btn-secondary:hover {
+  background-color: #4b5563;
+  border-color: #4b5563;
+}
+
+.notification-actions .btn-danger {
+  background-color: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
+
+.notification-actions .btn-danger:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+}
+
+.notification-loading,
+.notification-error,
+.notification-empty {
+  padding: 20px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.notification-error {
+  color: #ef4444;
+}
+
+/* Responsive design for mobile */
+@media (max-width: 480px) {
+  .notification-panel {
+    width: 320px;
+    right: -50px;
+  }
+  
+  .notification-item {
+    padding: 10px 12px;
+  }
+  
+  .notification-title {
+    font-size: 13px;
+  }
+  
+  .notification-message {
+    font-size: 12px;
+  }
+}
+
+/* Simple Navbar Styles */
+.navbar {
+  background-color: #1f2937;
+  border-bottom: 1px solid #374151;
+}
+
+.navbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  height: 60px;
+}
+
+.navbar-brand {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-nav a {
+  color: #d1d5db;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.navbar-nav a:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-nav a.active {
+  color: #60a5fa;
+  background-color: rgba(96, 165, 250, 0.1);
+}
+
+.navbar-nav span {
+  color: #9ca3af;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.navbar-nav button {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.navbar-nav button:hover {
+  background-color: #dc2626;
+}
+
+/* Simple Page Styling */
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9fafb;
+}
+
+.App .container {
+  flex: 1;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page-title {
+  margin-bottom: 24px;
+  color: #111827;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.section-title {
+  margin-bottom: 16px;
+  color: #111827;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.card {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: 1px solid;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.btn-primary:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.btn-secondary {
+  background-color: #6b7280;
+  color: white;
+  border-color: #6b7280;
+}
+
+.btn-secondary:hover {
+  background-color: #4b5563;
+  border-color: #4b5563;
+}
+
+.btn-success {
+  background-color: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.btn-success:hover {
+  background-color: #059669;
+  border-color: #059669;
+}
+
+.btn-warning {
+  background-color: #f59e0b;
+  color: white;
+  border-color: #f59e0b;
+}
+
+.btn-warning:hover {
+  background-color: #d97706;
+  border-color: #d97706;
+}
+
+.btn-danger {
+  background-color: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
+
+.btn-danger:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #374151;
+  font-size: 14px;
+}
+
+.alert {
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+.alert-danger {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.alert-success {
+  background-color: #f0fdf4;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #6b7280;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Status badges */
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-submitted {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.status-processing {
+  background-color: #c7d2fe;
+  color: #3730a3;
+}
+
+.status-paid {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* Grid layouts */
+.grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* Utility classes */
+.text-center { text-align: center; }
+.mb-20 { margin-bottom: 20px; }
+.mt-20 { margin-top: 20px; }
+.d-flex { display: flex; }
+.justify-between { justify-content: space-between; }
+.align-center { align-items: center; }
+.gap-10 { gap: 10px; }
+.gap-20 { gap: 20px; }
+.w-full { width: 100%; }
+.hidden { display: none; }
+.visible { display: block; } 
