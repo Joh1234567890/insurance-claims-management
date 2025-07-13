@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { claimsStages } from '../constants/claimsStages';
 import axios from 'axios';
 
 const AdminDashboard = () => {
@@ -32,7 +33,8 @@ const AdminDashboard = () => {
       submitted: 'status-submitted',
       processing: 'status-processing',
       paid: 'status-paid',
-      rejected: 'status-rejected'
+      rejected: 'status-rejected',
+      returned: 'status-returned'
     };
     return colors[status] || 'status-pending';
   };
@@ -60,7 +62,8 @@ const AdminDashboard = () => {
       submitted: claims.filter(c => c.status === 'submitted').length,
       processing: claims.filter(c => c.status === 'processing').length,
       paid: claims.filter(c => c.status === 'paid').length,
-      rejected: claims.filter(c => c.status === 'rejected').length
+      rejected: claims.filter(c => c.status === 'rejected').length,
+      returned: claims.filter(c => c.status === 'returned').length
     };
     return counts;
   };
@@ -109,6 +112,10 @@ const AdminDashboard = () => {
           <div className="text-center">
             <h4>{statusCounts.rejected}</h4>
             <p>Rejected</p>
+          </div>
+          <div className="text-center">
+            <h4>{statusCounts.returned}</h4>
+            <p>Returned</p>
           </div>
         </div>
       </div>
@@ -165,6 +172,11 @@ const AdminDashboard = () => {
                 {claim.status === 'submitted' && (
                   <p style={{ color: '#007bff', fontWeight: 'bold' }}>
                     ✅ Ready for processing/rejection
+                  </p>
+                )}
+                {claim.status === 'returned' && (
+                  <p style={{ color: '#800080', fontWeight: 'bold' }}>
+                    🔄 Returned to client for corrections
                   </p>
                 )}
               </div>

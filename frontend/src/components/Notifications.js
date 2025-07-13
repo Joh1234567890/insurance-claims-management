@@ -184,7 +184,7 @@ const Notifications = () => {
                       </button>
                     )}
                     
-                    {notification.type === 'claim_rejected' ? (
+                    {notification.type === 'claim_rejected' || (notification.type === 'claim_status_change' && notification.data?.newStatus === 'returned') ? (
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();

@@ -281,27 +281,32 @@ code {
 }
 
 .status-pending {
-  background-color: #1e40af;
+  background-color: #00008B;
   color: white;
 }
 
 .status-submitted {
-  background-color: #ea580c;
+  background-color: #FFA500;
   color: white;
 }
 
 .status-processing {
-  background-color: #1e40af;
+  background-color: #17A2B8;
   color: white;
 }
 
 .status-paid {
-  background-color: #16a34a;
+  background-color: #008000;
   color: white;
 }
 
 .status-rejected {
-  background-color: #dc2626;
+  background-color: #FF0000;
+  color: white;
+}
+
+.status-returned {
+  background-color: #800080;
   color: white;
 }
 

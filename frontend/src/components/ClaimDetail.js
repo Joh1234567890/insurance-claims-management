@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { claimsStages } from '../constants/claimsStages';
 import axios from 'axios';
 
 const ClaimDetail = () => {
@@ -17,6 +18,10 @@ const ClaimDetail = () => {
   const [rejectionReason, setRejectionReason] = useState('');
   const [selectedRejectedFiles, setSelectedRejectedFiles] = useState([]);
   const [rejectingClaim, setRejectingClaim] = useState(false);
+  const [returnReason, setReturnReason] = useState('');
+  const [selectedReturnedFiles, setSelectedReturnedFiles] = useState([]);
+  const [returningClaim, setReturningClaim] = useState(false);
+  const [showReturnForm, setShowReturnForm] = useState(false);
   const [submittingClaim, setSubmittingClaim] = useState(false);
   const [resubmittingFiles, setResubmittingFiles] = useState(false);
   const [resubmittingClaim, setResubmittingClaim] = useState(false);
@@ -171,6 +176,30 @@ const ClaimDetail = () => {
     }
   };
 
+  const handleReturnClaim = async () => {
+    if (!returnReason.trim() || returnReason.trim().length < 10) {
+      setError('Please provide a detailed return reason (at least 10 characters)');
+      return;
+    }
+
+    setReturningClaim(true);
+    try {
+      await axios.post(`/api/workflow/return/${id}`, {
+        reason: returnReason.trim(),
+        returnedFiles: selectedReturnedFiles
+      });
+      fetchClaim();
+      setReturnReason('');
+      setSelectedReturnedFiles([]);
+      setShowReturnForm(false);
+    } catch (error) {
+      console.error('Error returning claim:', error);
+      setError(error.response?.data?.message || 'Failed to return claim');
+    } finally {
+      setReturningClaim(false);
+    }
+  };
+
   const handleResubmitClaim = async () => {
     setResubmittingClaim(true);
     try {
@@ -210,7 +239,8 @@ const ClaimDetail = () => {
       submitted: 'status-submitted',
       processing: 'status-processing',
       paid: 'status-paid',
-      rejected: 'status-rejected'
+      rejected: 'status-rejected',
+      returned: 'status-returned'
     };
     return colors[status] || 'status-pending';
   };
@@ -337,7 +367,7 @@ const ClaimDetail = () => {
             {/* Resubmission Section for Rejected Claims */}
             {user?.role === 'client' && (
               <div className="mt-16" style={{ backgroundColor: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '8px', padding: '16px' }}>
-                <h5 style={{ color: '#0369a1', marginBottom: '12px' }}>📝 Resubmit Claim</h5>
+                <h5 style={{ color: '#0369a1', marginBottom: '12px' }}>�� Resubmit Claim</h5>
                 <p style={{ color: '#0369a1', marginBottom: '16px' }}>
                   You can upload new documents and resubmit your claim for review.
                 </p>
@@ -393,6 +423,28 @@ const ClaimDetail = () => {
           </div>
         )}
 
+        {/* Resubmission Section for Returned Claims */}
+        {user?.role === 'client' && claim.status === 'returned' && (
+          <div className="mt-20" style={{ backgroundColor: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '8px', padding: '16px' }}>
+            <h5 style={{ color: '#0369a1', marginBottom: '12px' }}>🔄 Resubmit Claim</h5>
+            <p style={{ color: '#0369a1', marginBottom: '16px' }}>
+              Your claim was returned for corrections. Upload new documents and resubmit your claim for review.
+            </p>
+            <div className="d-flex gap-10">
+              <button 
+                onClick={handleResubmitClaim}
+                className="btn btn-primary"
+                disabled={resubmittingClaim}
+              >
+                {resubmittingClaim ? 'Resubmitting...' : 'Resubmit Claim'}
+              </button>
+              <p style={{ fontSize: '14px', color: '#0369a1', margin: '0' }}>
+                Upload new documents above, then click "Resubmit Claim"
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Admin Status Controls */}
         {user?.role === 'admin' && (
           <div className="mt-20">
@@ -400,28 +452,35 @@ const ClaimDetail = () => {
             
             {/* Check if any files are flagged */}
             {claim.files && claim.files.some(file => file.flagged) ? (
-              /* Show Rejection Controls when files are flagged */
+              /* Show Rejection and Return Controls when files are flagged */
               <div>
-                <h4>Reject Claim (Files Flagged)</h4>
+                <h4>Admin Action (Files Flagged)</h4>
                 <div className="form-group">
-                  <label className="form-label">Rejection Reason *</label>
+                  <label className="form-label">Rejection/Return Reason *</label>
                   <textarea
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
                     className="form-control"
                     rows="3"
-                    placeholder="Provide detailed reason for rejection (minimum 10 characters)..."
+                    placeholder="Provide detailed reason (minimum 10 characters)..."
                     minLength="10"
                   />
                 </div>
-                
-                <button 
-                  onClick={handleRejectClaim}
-                  className="btn btn-danger"
-                  disabled={rejectingClaim || !rejectionReason.trim() || rejectionReason.trim().length < 10}
-                >
-                  {rejectingClaim ? 'Rejecting...' : 'Reject Claim'}
-                </button>
+                <div className="d-flex gap-10">
+                  <button 
+                    onClick={handleRejectClaim}
+                    className="btn btn-danger"
+                    disabled={rejectingClaim || !rejectionReason.trim() || rejectionReason.trim().length < 10}
+                  >
+                    {rejectingClaim ? 'Rejecting...' : 'Reject Claim'}
+                  </button>
+                  <button 
+                    onClick={() => setShowReturnForm(true)}
+                    className="btn btn-warning"
+                  >
+                    Return to Client
+                  </button>
+                </div>
               </div>
             ) : (
               /* Show Processing Controls when no files are flagged */
@@ -448,15 +507,30 @@ const ClaimDetail = () => {
                   >
                     Reject Claim
                   </button>
+                  <button 
+                    onClick={() => setShowReturnForm(true)}
+                    className="btn btn-warning"
+                  >
+                    Return to Client
+                  </button>
                 </>
               )}
               {claim.status === 'processing' && (
-                  <button 
-                    onClick={() => handleStatusUpdate('paid')}
-                    className="btn btn-success"
-                  >
-                    Mark as Paid
-                  </button>
+                  <>
+                    <button 
+                      onClick={() => handleStatusUpdate('paid')}
+                      className="btn btn-success"
+                    >
+                      Mark as Paid
+                    </button>
+                    <button
+                      onClick={() => window.open('about:blank', '_blank')}
+                      className="btn btn-secondary"
+                      style={{ marginLeft: '10px' }}
+                    >
+                      Fetch to Database
+                    </button>
+                  </>
               )}
             </div>
             )}
@@ -499,6 +573,45 @@ const ClaimDetail = () => {
                 </div>
               </div>
             )}
+
+            {/* Return Form Modal */}
+            {showReturnForm && (
+              <div className="modal-overlay">
+                <div className="modal-content">
+                  <h4>Return Claim to Client</h4>
+                  <div className="form-group">
+                    <label className="form-label">Return Reason *</label>
+                    <textarea
+                      value={returnReason}
+                      onChange={(e) => setReturnReason(e.target.value)}
+                      className="form-control"
+                      rows="3"
+                      placeholder="Provide detailed reason for returning the claim (minimum 10 characters)..."
+                      minLength="10"
+                    />
+                  </div>
+                  
+                  <div className="d-flex gap-10">
+                    <button 
+                      onClick={handleReturnClaim}
+                      className="btn btn-warning"
+                      disabled={returningClaim || !returnReason.trim() || returnReason.trim().length < 10}
+                    >
+                      {returningClaim ? 'Returning...' : 'Return Claim'}
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setShowReturnForm(false);
+                        setReturnReason('');
+                      }}
+                      className="btn btn-secondary"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -508,6 +621,45 @@ const ClaimDetail = () => {
         <div className="d-flex justify-between align-center mb-20">
           <h3>Documents ({claim.files?.length || 0})</h3>
         </div>
+
+        {/* Flagged Files Summary */}
+        {claim.files && claim.files.some(file => file.flagged) && (
+          <div style={{
+            backgroundColor: '#fef2f2',
+            border: '1px solid #fecaca',
+            borderRadius: '8px',
+            padding: '16px',
+            marginBottom: '20px',
+            borderLeft: '4px solid #dc3545'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
+              <span style={{
+                backgroundColor: '#dc3545',
+                color: 'white',
+                padding: '4px 8px',
+                borderRadius: '4px',
+                marginRight: '8px',
+                fontSize: '12px',
+                fontWeight: 'bold'
+              }}>
+                ⚠️ FLAGGED FILES
+              </span>
+              <span style={{ color: '#6b7280', fontSize: '14px' }}>
+                {claim.files.filter(file => file.flagged).length} file(s) require attention
+              </span>
+            </div>
+            <div style={{ fontSize: '14px', color: '#374151' }}>
+              <strong>Admin Comments:</strong>
+              <ul style={{ marginTop: '8px', marginBottom: '0', paddingLeft: '20px' }}>
+                {claim.files.filter(file => file.flagged).map((file, index) => (
+                  <li key={file._id} style={{ marginBottom: '4px' }}>
+                    <strong>{file.originalName}:</strong> {file.adminComments}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
 
         {claim.files?.length === 0 ? (
           <p>No documents uploaded yet.</p>
@@ -529,10 +681,31 @@ const ClaimDetail = () => {
                       Uploaded: {formatDate(file.uploadDate)}
                     </small>
                     {file.flagged && (
-                      <div style={{ marginTop: '5px' }}>
-                        <strong style={{ color: '#dc3545' }}>FLAGGED</strong>
-                        <br />
-                        <small><strong>Comment:</strong> {file.adminComments}</small>
+                      <div style={{ 
+                        marginTop: '8px', 
+                        padding: '8px 12px', 
+                        backgroundColor: '#fef2f2', 
+                        border: '1px solid #fecaca', 
+                        borderRadius: '6px',
+                        borderLeft: '4px solid #dc3545'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                          <span style={{ 
+                            backgroundColor: '#dc3545',
+                            color: 'white',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            marginRight: '8px',
+                            fontSize: '11px',
+                            fontWeight: 'bold'
+                          }}>
+                            FLAGGED
+                          </span>
+                          <small style={{ color: '#6b7280' }}>Requires attention</small>
+                        </div>
+                        <div style={{ color: '#374151', fontSize: '13px' }}>
+                          <strong>Admin Comment:</strong> {file.adminComments}
+                        </div>
                       </div>
                     )}
                   </div>

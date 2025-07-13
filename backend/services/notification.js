@@ -127,7 +127,8 @@ class NotificationService {
       'processing': 'Your claim is now being processed.',
       'paid': 'Your claim has been approved and payment has been processed.',
       'rejected': `Your claim has been rejected. ${reason ? `Reason: ${reason}` : ''}`,
-      'pending': 'Your claim requires additional information. Please check the details.'
+      'pending': 'Your claim requires additional information. Please check the details.',
+      'returned': `Your claim has been returned for corrections. ${reason ? `Reason: ${reason}` : ''}`
     };
 
     const title = `Claim Status Updated - ${newStatus.toUpperCase()}`;

@@ -770,28 +770,33 @@
 }
 
 .status-pending {
-  background-color: #fef3c7;
-  color: #92400e;
+  background-color: #00008B;
+  color: white;
 }
 
 .status-submitted {
-  background-color: #dbeafe;
-  color: #1e40af;
+  background-color: #FFA500;
+  color: white;
 }
 
 .status-processing {
-  background-color: #c7d2fe;
-  color: #3730a3;
+  background-color: #17A2B8;
+  color: white;
 }
 
 .status-paid {
-  background-color: #d1fae5;
-  color: #065f46;
+  background-color: #008000;
+  color: white;
 }
 
 .status-rejected {
-  background-color: #fee2e2;
-  color: #991b1b;
+  background-color: #FF0000;
+  color: white;
+}
+
+.status-returned {
+  background-color: #800080;
+  color: white;
 }
 
 /* Grid layouts */

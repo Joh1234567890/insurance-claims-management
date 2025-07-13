@@ -263,6 +263,59 @@ router.post('/request-resubmission/:id', protect, authorize('admin'), async (req
   }
 });
 
+// @route   POST /api/workflow/return/:id
+// @desc    Return a claim to client (Admin only)
+// @access  Private (Admin only)
+router.post('/return/:id', protect, authorize('admin'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason, returnedFiles } = req.body;
+    const db = getDB();
+
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid claim ID'
+      });
+    }
+
+    if (!reason || reason.trim().length < 10) {
+      return res.status(400).json({
+        success: false,
+        message: 'Return reason is required and must be at least 10 characters'
+      });
+    }
+
+    const claim = await db.collection('claims').findOne({ _id: new ObjectId(id) });
+    if (!claim) {
+      return res.status(404).json({
+        success: false,
+        message: 'Claim not found'
+      });
+    }
+
+    // Process claim return
+    await WorkflowEngine.processClaimReview(id, req.user.id, 'return', {
+      reason: reason.trim(),
+      returnedFiles: returnedFiles || []
+    });
+
+    // Notify client
+    await NotificationService.notifyClaimStatusChange(id, claim.userId.toString(), 'returned');
+
+    res.json({
+      success: true,
+      message: 'Claim returned to client successfully'
+    });
+  } catch (error) {
+    console.error('Return claim error:', error);
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
 // @route   POST /api/workflow/process-payment/:id
 // @desc    Process claim payment (Admin only)
 // @access  Private (Admin only)

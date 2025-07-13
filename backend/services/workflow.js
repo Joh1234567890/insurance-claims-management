@@ -119,6 +119,21 @@ class WorkflowEngine {
           updateData.filesToResubmit = details.filesToResubmit || [];
           break;
 
+        case 'return':
+          // Only allow returning submitted claims
+          if (claim.status !== 'submitted') {
+            console.log(`Admin ${adminId} attempted to return claim ${claimId} with status ${claim.status}. Only submitted claims can be returned.`);
+            throw new Error('Only submitted claims can be returned. Please mark the claim as submitted first.');
+          }
+          console.log(`Admin ${adminId} returning claim ${claimId} to client`);
+          newStatus = 'returned';
+          updateData.status = newStatus;
+          updateData.returnReason = details.reason;
+          updateData.returnedAt = new Date();
+          updateData.returnedBy = adminId;
+          updateData.returnedFiles = details.returnedFiles || [];
+          break;
+
         default:
           throw new Error('Invalid action');
       }
@@ -276,17 +291,44 @@ class WorkflowEngine {
   static async processFileResubmission(claimId, userId, userRole, resubmittedFiles) {
     try {
       const db = getDB();
-      
       const claim = await db.collection('claims').findOne({ _id: new ObjectId(claimId) });
-      
       if (!claim) {
         throw new Error('Claim not found');
+      }
+
+      // If claim was returned, clear all file flags and admin comments, set status to pending, and log return history
+      if (claim.status === 'returned') {
+        await db.collection('claims').updateOne(
+          { _id: new ObjectId(claimId) },
+          { $set: { 
+              'files.$[].flagged': false,
+              'files.$[].adminComments': '',
+              status: 'pending',
+              updatedAt: new Date(),
+            },
+            $push: { returnHistory: { returnedAt: claim.returnedAt || new Date(), reason: claim.returnReason, by: claim.returnedBy } }
+          }
+        );
+      }
+
+      // If claim was rejected, clear all file flags and admin comments, set status to pending, and log rejection history
+      if (claim.status === 'rejected') {
+        await db.collection('claims').updateOne(
+          { _id: new ObjectId(claimId) },
+          { $set: { 
+              'files.$[].flagged': false,
+              'files.$[].adminComments': '',
+              status: 'pending',
+              updatedAt: new Date(),
+            },
+            $push: { rejectionHistory: { rejectedAt: claim.rejectedAt || new Date(), reason: claim.rejectionReason, by: claim.rejectedBy } }
+          }
+        );
       }
 
       if (claim.status !== 'pending') {
         throw new Error('Only pending claims can have files resubmitted');
       }
-
 
       for (const file of resubmittedFiles) {
         await db.collection('claims').updateOne(

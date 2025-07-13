@@ -430,11 +430,11 @@ router.put('/:id/resubmit', protect, authorize('client'), async (req, res) => {
       });
     }
 
-    // Only allow resubmission of rejected claims
-    if (claim.status !== 'rejected') {
+    // Only allow resubmission of rejected or returned claims
+    if (!['rejected', 'returned'].includes(claim.status)) {
       return res.status(400).json({
         success: false,
-        message: 'Only rejected claims can be resubmitted'
+        message: 'Only rejected or returned claims can be resubmitted'
       });
     }
 
